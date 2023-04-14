@@ -16,7 +16,7 @@ class Chatbot:
 
     def __init__(self):
         # The chatbot's default name is `moviebot`.
-        self.name = 'moviebot' # TODO: Give your chatbot a new name.
+        self.name = "CinemAI" # TODO: Give your chatbot a new name.
 
         # This matrix has the following shape: num_movies x num_users
         # The values stored in each row i and column j is the rating for
@@ -41,14 +41,9 @@ class Chatbot:
         Consider adding to this description any information about what your
         chatbot can do and how the user can interact with it.
         """
-        return """
-        Your task is to implement the chatbot as detailed in the HW6
-        instructions (README.md).
-
-        To exit: write ":quit" (or press Ctrl-C to force the exit)
-
-        TODO: Write the description for your own chatbot here in the `intro()` function.
-        """
+        return "Hi, I'm CinemAI, your friendly neighborhood movie chatbot! \n\
+            I can provide movie recommendations based on the movies you like or dislike. \n\
+            You can write \":quit\" or press Ctrl-C anytime to stop."
 
     def greeting(self):
         """Return a message that the chatbot uses to greet the user."""
@@ -56,7 +51,7 @@ class Chatbot:
         # TODO: Write a short greeting message                                 #
         ########################################################################
 
-        greeting_message = "How can I help you?"
+        greeting_message = "Let's get started! Tell me some of your preferences."
 
         ########################################################################
         #                             END OF YOUR CODE                         #
@@ -71,7 +66,7 @@ class Chatbot:
         # TODO: Write a short farewell message                                 #
         ########################################################################
 
-        goodbye_message = "Have a nice day!"
+        goodbye_message = "Bye bye!"
 
         ########################################################################
         #                          END OF YOUR CODE                            #
@@ -266,7 +261,25 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        return [self.titles[candidate][0] for candidate in candidates if clarification.lower() in self.titles[candidate][0].lower()]
+
+        dates = re.findall("(\d{4})", clarification)
+
+        titles = self.extract_titles(clarification)
+
+        if len(dates) > 0:
+            candidates = [candidate for candidate in candidates if dates[0] in self.titles[candidate][0]]
+
+        if len(candidates) > 1 and len(titles) > 0:
+            movies = [candidate for candidate in candidates if titles[0] in self.titles[candidate][0].lower()]
+            if len(movies) > 0:
+                candidates = movies
+
+        if len(candidates) > 1:
+            movies = [candidate for candidate in candidates if clarification.lower() in self.titles[candidate][0].lower()]
+            if len(movies) > 0:
+                candidates = movies
+
+        return candidates
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
