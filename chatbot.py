@@ -162,7 +162,8 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################                                             
-        return [] # TODO: delete and replace this line
+        regex = "\"([^\"]*)\""
+        return re.findall(regex, user_input)
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
@@ -203,7 +204,9 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################                                                 
-        return [] # TODO: delete and replace this line
+        pattern = "([Tt]he\s|[Aa]n\s|[Aa]\s)?(.*)"
+        processed_title = re.findall(pattern, title.lower())[0][1].strip()
+        return [i for i in range(len(self.titles)) if processed_title in self.titles[i][0].lower()]
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
