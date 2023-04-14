@@ -267,7 +267,6 @@ class Chatbot:
         #                          START OF YOUR CODE                          #
         ########################################################################
         return [self.titles[candidate][0] for candidate in candidates if clarification.lower() in self.titles[candidate][0].lower()]
-        #return [] # TODO: delete and replace this line
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
