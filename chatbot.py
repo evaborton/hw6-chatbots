@@ -89,6 +89,17 @@ class Chatbot:
     ############################################################################
     # 2. Extracting and transforming                                           #
     ############################################################################
+    def rec(self, line: str) -> str:
+        if line.lower() == 'yes':
+            if len(self.recommendation_storage) > 0:
+                response = f"Wonderful! I suggest you watch {self.recommendation_storage[0]}"
+                self.recommendation_storage.pop(0)
+            else:
+                response = "Sorry, that was all the recs I had! :'( Enter ':quit' to quit."
+        else:
+            response = f"Enter 'yes' to receive a recommendation or ':quit' to quit."
+
+        return response
 
     def process(self, line: str) -> str:
         """Process a line of input from the REPL and generate a response.
@@ -122,15 +133,7 @@ class Chatbot:
         # response = "I (the chatbot) processed '{}'".format(line)
 
         if self.state == 'recommendation':
-            if line.lower() == 'yes':
-                if len(self.recommendation_storage) > 0:
-                    response = f"Wonderful! I suggest you watch {self.recommendation_storage[0]}"
-                    self.recommendation_storage.pop(0)
-                else:
-                    response = "Sorry, that was all the recs I had! :'( Enter ':quit' to quit."
-            else:
-                response = f"Enter 'yes' to receive a recommendation or ':quit' to quit."
-
+            return self.rec(line)
 
         if self.state == 'input':
             titles = self.extract_titles(line) # list of all movies in the line
@@ -158,11 +161,13 @@ class Chatbot:
         if len(indices) == 0:
             response = f"Sorry, I am not familiar with the movie '{title}'"
         elif len(indices) == 1:
+            title = self.titles[indices[0]][0]
             response = f"I see you {feeling} the movie '{title}'."
             self.user_ratings[indices[0]] = sentiment
 
             if len(self.user_ratings) >= 5:
                 recs = self.recommend_movies(self.user_ratings, 5)
+                print("recs: ", recs)
                 response += f"\nThanks! That's enough information for me to make a recommendation.\
                 I recommend you watch {recs[0]}. Would you like another recommendation? [yes or :quit] "
                 self.state = 'recommendation'
@@ -170,16 +175,14 @@ class Chatbot:
             else:
                 self.state = 'input'
         else:
-            movies = self.titles[indices[0]]
+
+            movies = self.titles[indices[0]][0]
             for index in indices[1:]:
-                movies += f"or {self.titles[index]}"
+                movies += f" or {self.titles[index][0]}"
 
             self.state = 'clarification'
             self.clarification_storage = (indices, sentiment)
             response = f"That could refer to {movies}. Can you please clarify?"
-
-
-        # handle if a title can refer to more than one movie
 
 
         ########################################################################
