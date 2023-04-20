@@ -30,6 +30,11 @@ class Chatbot:
         self.train_logreg_sentiment_classifier()
 
         # TODO: put any other class variables you need here
+        self.user_ratings = {}
+
+        self.state = 'input' # ['input', 'clarification', 'recommendation']
+        self.clarification_storage = ([], 0) # movies we're choosing from, sentiment already expressed
+        self.recommendation_storage = [] # list of recs we haven't yet given
 
     ############################################################################
     # 1. WARM UP REPL                                                          #
@@ -114,7 +119,68 @@ class Chatbot:
         # code in a modular fashion to make it easier to improve and debug.    #
         ########################################################################
 
-        response = "I (the chatbot) processed '{}'".format(line)
+        # response = "I (the chatbot) processed '{}'".format(line)
+
+        if self.state == 'recommendation':
+            if line.lower() == 'yes':
+                if len(self.recommendation_storage) > 0:
+                    response = f"Wonderful! I suggest you watch {self.recommendation_storage[0]}"
+                    self.recommendation_storage.pop(0)
+                else:
+                    response = "Sorry, that was all the recs I had! :'( Enter ':quit' to quit."
+            else:
+                response = f"Enter 'yes' to receive a recommendation or ':quit' to quit."
+
+
+        if self.state == 'input':
+            titles = self.extract_titles(line) # list of all movies in the line
+            sentiment = self.predict_sentiment_statistical(line)
+            if len(titles) == 0:
+                return "Sorry, I did not detect any movie titles in your response. \
+                Please check your spelling and make sure to include the title in quotations."
+            else:
+                title = titles[0] # just look at the first one for now
+                indices = self.find_movies_idx_by_title(title)
+
+
+        elif self.state == 'clarification':
+            indices = self.disambiguate_candidates(line, self.clarification_storage[0])
+            sentiment = self.clarification_storage[1]
+
+        if sentiment == 1:
+            feeling = "liked"
+        elif sentiment == -1:
+            feeling = "disliked"
+        else:
+            feeling = "felt neutrally about"
+
+
+        if len(indices) == 0:
+            response = f"Sorry, I am not familiar with the movie '{title}'"
+        elif len(indices) == 1:
+            response = f"I see you {feeling} the movie '{title}'."
+            self.user_ratings[indices[0]] = sentiment
+
+            if len(self.user_ratings) >= 5:
+                recs = self.recommend_movies(self.user_ratings, 5)
+                response += f"\nThanks! That's enough information for me to make a recommendation.\
+                I recommend you watch {recs[0]}. Would you like another recommendation? [yes or :quit] "
+                self.state = 'recommendation'
+                self.recommendation_storage = recs[1:]
+            else:
+                self.state = 'input'
+        else:
+            movies = self.titles[indices[0]]
+            for index in indices[1:]:
+                movies += f"or {self.titles[index]}"
+
+            self.state = 'clarification'
+            self.clarification_storage = (indices, sentiment)
+            response = f"That could refer to {movies}. Can you please clarify?"
+
+
+        # handle if a title can refer to more than one movie
+
 
         ########################################################################
         #                          END OF YOUR CODE                            #
