@@ -139,7 +139,7 @@ class Chatbot:
             titles = self.extract_titles(line) # list of all movies in the line
             sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
-                return "Sorry, I did not detect any movie titles in your response. \
+                return "Sorry, I did not detect any movie titles in your response. \n\
                 Please check your spelling and make sure to include the title in quotations."
             else:
                 title = titles[0] # just look at the first one for now
@@ -357,6 +357,10 @@ class Chatbot:
     # 3. Sentiment                                                             #
     ###########################################################################
 
+    def tokenize(self, user_input: str) -> list:
+        regex = r"[A-Za-z]+|\$[\d\.]+|\S+" 
+        return re.findall(regex, user_input.lower())
+
     def predict_sentiment_rule_based(self, user_input: str) -> int:
         """Predict the sentiment class given a user_input
 
@@ -369,7 +373,7 @@ class Chatbot:
 
         This function should return
         -1 (negative sentiment): if neg_tok_count > pos_tok_count
-        0 (neural): if neg_tok_count is equal to pos_tok_count
+        0 (neutral): if neg_tok_count is equal to pos_tok_count
         +1 (postive sentiment): if neg_tok_count < pos_tok_count
 
         Example:
@@ -388,7 +392,23 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        return 0 # TODO: delete and replace this line
+        
+        # get list of tokens from user input 
+        tokens = self.tokenize(user_input)
+        counter = 0
+        for token in tokens: 
+            if token in self.sentiment:
+                if self.sentiment[token] == "neg": 
+                    counter -= 1
+                else:
+                    counter += 1
+        if counter < 0: 
+            return -1
+        elif counter == 0:
+            return 0
+        else:
+            return 1
+        
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
@@ -422,8 +442,11 @@ class Chatbot:
         #                          START OF YOUR CODE                          #
         ########################################################################
 
-        pass # TODO: delete and replace this line
-
+        y = np.array([1 if elem == "Fresh" else -1 for elem in y])
+        self.count_vectorizer =  CountVectorizer(stop_words='english')
+        # transform texts into nparray
+        X = self.count_vectorizer.fit_transform(texts).toarray()
+        
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
