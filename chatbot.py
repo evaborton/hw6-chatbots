@@ -137,7 +137,7 @@ class Chatbot:
 
         if self.state == 'input':
             titles = self.extract_titles(line) # list of all movies in the line
-            sentiment = self.predict_sentiment_statistical(line)
+            sentiment = self.predict_sentiment_rule_based(line)
             if len(titles) == 0:
                 return "Sorry, I did not detect any movie titles in your response. \n\
                 Please check your spelling and make sure to include the title in quotations."
@@ -358,7 +358,7 @@ class Chatbot:
     ###########################################################################
 
     def tokenize(self, user_input: str) -> list:
-        regex = r"[A-Za-z]+|\$[\d\.]+|\S+" 
+        regex = r"[A-Za-z]+|\$[\d\.]+|\S+"
         return re.findall(regex, user_input.lower())
 
     def predict_sentiment_rule_based(self, user_input: str) -> int:
@@ -392,23 +392,23 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        
-        # get list of tokens from user input 
+
+        # get list of tokens from user input
         tokens = self.tokenize(user_input)
         counter = 0
-        for token in tokens: 
+        for token in tokens:
             if token in self.sentiment:
-                if self.sentiment[token] == "neg": 
+                if self.sentiment[token] == "neg":
                     counter -= 1
                 else:
                     counter += 1
-        if counter < 0: 
+        if counter < 0:
             return -1
         elif counter == 0:
             return 0
         else:
             return 1
-        
+
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
@@ -435,9 +435,6 @@ class Chatbot:
         #load training data
         texts, y = util.load_rotten_tomatoes_dataset()
 
-        self.model = None #variable name that will eventually be the sklearn Logistic Regression classifier you train
-        self.count_vectorizer = None #variable name will eventually be the CountVectorizer from sklearn
-
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
@@ -446,7 +443,10 @@ class Chatbot:
         self.count_vectorizer =  CountVectorizer(stop_words='english')
         # transform texts into nparray
         X = self.count_vectorizer.fit_transform(texts).toarray()
-        
+
+        self.model = sklearn.linear_model.LogisticRegression(penalty=None)
+        self.model.fit(X, y)
+
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
