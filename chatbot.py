@@ -26,8 +26,10 @@ class Chatbot:
         # Load sentiment words
         self.sentiment = util.load_sentiment_dictionary('data/sentiment.txt')
 
+        self.count_vectorizer = None
+        self.model = None
         # Train the classifier
-        self.train_logreg_sentiment_classifier()
+        self.train_logreg_sentiment_classifier() # stores in model and count_vectorizer
 
         # TODO: put any other class variables you need here
         self.user_ratings = {}
@@ -137,7 +139,7 @@ class Chatbot:
 
         if self.state == 'input':
             titles = self.extract_titles(line) # list of all movies in the line
-            sentiment = self.predict_sentiment_rule_based(line)
+            sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
                 return "Sorry, I did not detect any movie titles in your response. \n\
                 Please check your spelling and make sure to include the title in quotations."
@@ -484,7 +486,15 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        return 0 # TODO: delete and replace this line
+        text = [user_input.lower()]
+        X = self.count_vectorizer.transform(text).toarray()
+        for elem in X[0]:
+            # only use predict if there are any words in our vocab
+            if elem != 0:
+                return self.model.predict(X)
+
+        # return 0 if no words in our vocab
+        return 0
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
