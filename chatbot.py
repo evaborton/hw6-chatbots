@@ -442,11 +442,11 @@ class Chatbot:
         ########################################################################
 
         y = np.array([1 if elem == "Fresh" else -1 for elem in y])
-        self.count_vectorizer =  CountVectorizer(stop_words='english')
+        self.count_vectorizer =  CountVectorizer(stop_words='english', max_features = 1000) 
         # transform texts into nparray
         X = self.count_vectorizer.fit_transform(texts).toarray()
 
-        self.model = sklearn.linear_model.LogisticRegression(penalty=None)
+        self.model = sklearn.linear_model.LogisticRegression(penalty=None, max_iter = 1000)
         self.model.fit(X, y)
 
         ########################################################################
@@ -545,8 +545,6 @@ class Chatbot:
         for index in rec_ind:
             res.append(self.titles[index][0])
         return res
-
-
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
