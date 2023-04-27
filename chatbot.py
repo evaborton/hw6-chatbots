@@ -442,7 +442,7 @@ class Chatbot:
         ########################################################################
 
         y = np.array([1 if elem == "Fresh" else -1 for elem in y])
-        self.count_vectorizer =  CountVectorizer(stop_words='english', max_features = 1000) 
+        self.count_vectorizer =  CountVectorizer(stop_words='english', max_features = 1000, min_df = 20) 
         # transform texts into nparray
         X = self.count_vectorizer.fit_transform(texts).toarray()
 
