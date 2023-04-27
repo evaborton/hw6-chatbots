@@ -150,7 +150,7 @@ class Chatbot:
 
         elif self.state == 'clarification':
             indices = self.disambiguate_candidates(line, self.clarification_storage[0])
-            sentiment = self.clarification_storage[1]
+            sentiment = self.clarification_storage[1] # TODO: mess up if have to clarify
 
         if sentiment == 1:
             feeling = "liked"
@@ -491,7 +491,7 @@ class Chatbot:
         for elem in X[0]:
             # only use predict if there are any words in our vocab
             if elem != 0:
-                return self.model.predict(X)
+                return self.model.predict(X)[0]
 
         # return 0 if no words in our vocab
         return 0
@@ -536,7 +536,17 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        return [""]  # TODO: delete and replace this line
+        user_ratings_full = [0] * self.ratings.shape[0] # number of movies 
+        for index in user_ratings:
+            user_ratings_full[index] = user_ratings[index]
+        user_ratings_full = np.array(user_ratings_full)
+        rec_ind = util.recommend(user_ratings_full, self.ratings, num_return)
+        res = []
+        for index in rec_ind:
+            res.append(self.titles[index][0])
+        return res
+
+
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
