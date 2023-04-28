@@ -590,8 +590,11 @@ class Chatbot:
 
     def spellcheck(self, line: str) -> str:
         """
-        TODO: delete and replace with your function.
-        Be sure to put an adequate description in this docstring.
+        Given a potentially misspelled input, attempts to autocorrect and
+        returns the correctly spelled input. 
+        Note that this function tokenized the input before processing, 
+        so in the returned string only the words from input
+        (and not punctuations, etc) are reserved. 
         """
         from spellchecker import SpellChecker
         spell = SpellChecker()
