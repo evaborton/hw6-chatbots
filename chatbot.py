@@ -395,6 +395,11 @@ class Chatbot:
         #                          START OF YOUR CODE                          #
         ########################################################################
 
+        # remove movie title from input
+        split = re.split("\"", user_input)
+        if len(split) > 2:
+            user_input = split[0] + split[2]
+
         # get list of tokens from user input
         tokens = self.tokenize(user_input)
         counter = 0
@@ -486,6 +491,12 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
+
+        # remove movie title from input
+        split = re.split("\"", user_input)
+        if len(split) > 2:
+            user_input = split[0] + split[2]
+
         text = [user_input.lower()]
         X = self.count_vectorizer.transform(text).toarray()
         for elem in X[0]:
