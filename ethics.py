@@ -19,7 +19,13 @@ distinguish the chatbot responses from those of a human?
 
 Q1_your_answer = """
 
-Delete and put your answer here
+There is pottential for users of our chatbot to possibly anthropomorphize it. 
+A possible ramifications of anthropomorphizing chatbot systems include false confidence of 
+users in these systems. The stakes are not as high in our movie recommendation chatbot, 
+but for a system who is highly human-like (ChatGPT) and also tends to hallucinate facts, 
+false confidence in the chatbot can be dangerous. Another possible problem is creating distrust
+and frustration for users. If the chatbot fails to understand common sense (despite "speaking" like a human), the 
+user might get frustrated and distrust the chatbot. 
 
 """
 
@@ -67,6 +73,8 @@ compared to an end-to-end deep learning approach, e.g. ChatGPT?
 
 Q4_your_answer = """
 
-Delete and put your answer here
+The main advatage of this paradigm is that it is intepretable. It is also modular, which makes it easy to 
+implement and debug. However, this system is not very generalizable and high performing as an end-to-end 
+deep learning approach such as ChatGPT. 
 
 """
