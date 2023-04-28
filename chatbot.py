@@ -94,7 +94,7 @@ class Chatbot:
     def rec(self, line: str) -> str:
         if line.lower() == 'yes':
             if len(self.recommendation_storage) > 0:
-                response = f"Wonderful! I suggest you watch {self.recommendation_storage[0]}"
+                response = f"Wonderful! I suggest you watch {self.recommendation_storage[0]}. Would you like another recommendation? [yes or :quit] "
                 self.recommendation_storage.pop(0)
             else:
                 response = "Sorry, that was all the recs I had! :'( Enter ':quit' to quit."
@@ -140,7 +140,7 @@ class Chatbot:
 
         if self.state == 'input':
             titles = self.extract_titles(line) # list of all movies in the line
-            # after extracting title attempt to autocorrect 
+            # after extracting title attempt to autocorrect
             line = self.spellcheck(line)
             sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
