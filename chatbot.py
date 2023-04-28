@@ -144,7 +144,12 @@ class Chatbot:
             line = self.spellcheck(line)
             sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
-                return "Sorry, I did not detect any movie titles in your response. \nPlease check your spelling and make sure to include the title in quotations."
+                titles, indices = self.titles_without_quotes(line)
+
+                if len(titles) == 0:
+                    return "Sorry, I did not detect any movie titles in your response. \nPlease check your spelling and make sure to include the title in quotations."
+
+                title = titles[0]
             else:
                 title = titles[0] # just look at the first one for now
                 indices = self.find_movies_idx_by_title(title)
@@ -591,10 +596,10 @@ class Chatbot:
     def spellcheck(self, line: str) -> str:
         """
         Given a potentially misspelled input, attempts to autocorrect and
-        returns the correctly spelled input. 
-        Note that this function tokenized the input before processing, 
+        returns the correctly spelled input.
+        Note that this function tokenized the input before processing,
         so in the returned string only the words from input
-        (and not punctuations, etc) are reserved. 
+        (and not punctuations, etc) are reserved.
         """
         from spellchecker import SpellChecker
         spell = SpellChecker()
@@ -605,11 +610,30 @@ class Chatbot:
                 tok_line[i] = spell.correction(tok_line[i])
         return ' '.join(tok_line)
 
-    def function3():
+    def titles_without_quotes(self, user_input:str) -> (list, list):
         """
-        Any additional functions beyond two count towards extra credit
+        Can find titles even if there aren't quotes around it.
+        Returns both the title list and the indices of the titles
+        Is more picky about how accurate the titles are, but gives
+        some grace for not including stuff after colons or commas,
+        or not including dates.
         """
-        pass
+        titles = []
+        indices = []
+
+        # users don't have to input dates or stuff after commas/colons
+        pattern = "[\s\w\.\-\']+"
+
+        for i in range(len(self.titles)):
+
+            processed_title = self.titles[i][0].lower()
+            processed_title = re.findall(pattern, processed_title)[0]
+
+            if " " + processed_title in user_input.lower() or processed_title + " " in user_input.lower():
+                titles.append(self.titles[i][0])
+                indices.append(i)
+
+        return titles, indices
 
 
 if __name__ == '__main__':
