@@ -141,8 +141,7 @@ class Chatbot:
             titles = self.extract_titles(line) # list of all movies in the line
             sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
-                return "Sorry, I did not detect any movie titles in your response. \n\
-                Please check your spelling and make sure to include the title in quotations."
+                return "Sorry, I did not detect any movie titles in your response. \nPlease check your spelling and make sure to include the title in quotations."
             else:
                 title = titles[0] # just look at the first one for now
                 indices = self.find_movies_idx_by_title(title)
@@ -157,14 +156,17 @@ class Chatbot:
         elif sentiment == -1:
             feeling = "disliked"
         else:
-            feeling = "felt neutrally about"
+            feeling = "neutral"
 
 
         if len(indices) == 0:
             response = f"Sorry, I am not familiar with the movie '{title}'"
         elif len(indices) == 1:
             title = self.titles[indices[0]][0]
-            response = f"I see you {feeling} the movie '{title}'."
+            if feeling == "neutral":
+                response = f"I'm sorry, I'm not sure how you feel about '{title}'. Please try again and be more descriptive."
+            else:
+                response = f"I see you {feeling} the movie '{title}'. \nIf this is not correct, please try again and be more descriptive.\nIf it is correct, great! Please tell me about another movie: "
             self.user_ratings[indices[0]] = sentiment
 
             if len(self.user_ratings) >= 5:
@@ -558,6 +560,18 @@ class Chatbot:
         """
         pattern = "([Tt]he\s|[Aa]n\s|[Aa]\s)?(.*)"
         processed_title = re.findall(pattern, title.lower())[0][1].strip()
+
+
+
+        movie_list = [i for i in range(len(self.titles)) if processed_title == self.titles[i][0].lower()]
+
+        if len(movie_list) > 0:
+            return movie_list
+
+        movie_list = [i for i in range(len(self.titles)) if processed_title == re.split("\s\(\d", self.titles[i][0].lower())[0]]
+        if len(movie_list) > 0:
+            return movie_list
+
         return [i for i in range(len(self.titles)) if processed_title in self.titles[i][0].lower()]
 
     def function2():
