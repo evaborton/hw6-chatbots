@@ -134,11 +134,14 @@ class Chatbot:
 
         # response = "I (the chatbot) processed '{}'".format(line)
 
+
         if self.state == 'recommendation':
             return self.rec(line)
 
         if self.state == 'input':
             titles = self.extract_titles(line) # list of all movies in the line
+            # after extracting title attempt to autocorrect 
+            line = self.spellcheck(line)
             sentiment = self.predict_sentiment_statistical(line)
             if len(titles) == 0:
                 return "Sorry, I did not detect any movie titles in your response. \nPlease check your spelling and make sure to include the title in quotations."
@@ -585,12 +588,19 @@ class Chatbot:
 
         return [i for i in range(len(self.titles)) if processed_title in self.titles[i][0].lower()]
 
-    def function2():
+    def spellcheck(self, line: str) -> str:
         """
         TODO: delete and replace with your function.
         Be sure to put an adequate description in this docstring.
         """
-        pass
+        from spellchecker import SpellChecker
+        spell = SpellChecker()
+        tok_line = self.tokenize(line)
+        misspelled = spell.unknown(tok_line)
+        for i in range(len(tok_line)):
+            if tok_line[i] in misspelled:
+                tok_line[i] = spell.correction(tok_line[i])
+        return ' '.join(tok_line)
 
     def function3():
         """
