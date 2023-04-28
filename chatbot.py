@@ -270,9 +270,7 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        pattern = "([Tt]he\s|[Aa]n\s|[Aa]\s)?(.*)"
-        processed_title = re.findall(pattern, title.lower())[0][1].strip()
-        return [i for i in range(len(self.titles)) if processed_title in self.titles[i][0].lower()]
+        return self.titles_with_the_and_a(title)
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
@@ -442,7 +440,7 @@ class Chatbot:
         ########################################################################
 
         y = np.array([1 if elem == "Fresh" else -1 for elem in y])
-        self.count_vectorizer =  CountVectorizer(stop_words='english', max_features = 1000, min_df = 20) 
+        self.count_vectorizer =  CountVectorizer(stop_words='english', max_features = 1000, min_df = 20)
         # transform texts into nparray
         X = self.count_vectorizer.fit_transform(texts).toarray()
 
@@ -536,7 +534,7 @@ class Chatbot:
         ########################################################################
         #                          START OF YOUR CODE                          #
         ########################################################################
-        user_ratings_full = [0] * self.ratings.shape[0] # number of movies 
+        user_ratings_full = [0] * self.ratings.shape[0] # number of movies
         for index in user_ratings:
             user_ratings_full[index] = user_ratings[index]
         user_ratings_full = np.array(user_ratings_full)
@@ -554,12 +552,13 @@ class Chatbot:
     # 5. Open-ended                                                            #
     ############################################################################
 
-    def function1():
+    def titles_with_the_and_a(self, title:str) -> list:
         """
-        TODO: delete and replace with your function.
-        Be sure to put an adequate description in this docstring.
+        This function can extract titles that have "the" or "a/an" at the beginning.
         """
-        pass
+        pattern = "([Tt]he\s|[Aa]n\s|[Aa]\s)?(.*)"
+        processed_title = re.findall(pattern, title.lower())[0][1].strip()
+        return [i for i in range(len(self.titles)) if processed_title in self.titles[i][0].lower()]
 
     def function2():
         """
